@@ -37,11 +37,11 @@ namespace KERBALISM
 		// ====================================================================
 
 		/// <summary>
-		/// science data rate, in MB/s. note that internal transmitters can not transmit science data only telemetry data
+		/// science data rate, in MB/s (1000^2 byte/s). Note that internal transmitters can not transmit science data only telemetry data
 		/// </summary>
 		public double rate = 0.0;
 
-		/// <summary> ec cost while transmitting at the above rate </summary>
+		/// <summary> ec cost while transmitting at the above rate. ec_idle is substracted from that value</summary>
 		public double ec = 0.0;
 
 		/// <summary> ec cost while not transmitting </summary>
@@ -506,6 +506,28 @@ namespace KERBALISM
 
 		// --- SCIENCE --------------------------------------------------------------
 
+		// Science crediting override and event (implemented for Bureaucracy)
+		/// <summary> set to true to prevent Kerbalism from doing any call to ResearchAndDevelopment.Instance.AddScience() </summary>
+		public static bool preventScienceCrediting = false;
+
+		/// <summary> set to true to have Kerbalism fire the onSubjectsReceived event</summary>
+		public static bool subjectsReceivedEventEnabled = false;
+
+		/// <summary> time intervals at which the onSubjectsReceived event will be fired, you can adjust these if needed</summary>
+		public static double subjectsReceivedEventRealTimeInterval = 60.0; // in seconds
+		public static double subjectsReceivedEventGameTimeInterval = 60.0 * 60.0 * 6.0 * 5.0; // in seconds
+
+		/// <summary>
+		/// Event fired when one of the above time interval is first reached, if there are some subjects that
+		/// were transmitted or recovered since the last time the event has been fired.
+		/// First arg is the list of subjects that has been added or updated in the stock ResearchAndDevelopment
+		/// Second arg is the amount of science that was collected for each of these subjects (both list are always the same size)
+		/// </summary>
+		public static EventData<List<ScienceSubject>, List<double>> onSubjectsReceived
+			= new EventData<List<ScienceSubject>, List<double>>("onSubjectsReceived");
+
+
+		// KerbalismContracts event
 		public static ExperimentStateChanged OnExperimentStateChanged = new ExperimentStateChanged();
 		public class ExperimentStateChanged
 		{

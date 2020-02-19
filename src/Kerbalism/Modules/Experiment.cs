@@ -15,7 +15,7 @@ namespace KERBALISM
 		// config
 		[KSPField] public string experiment_id = string.Empty;    // id of associated experiment definition
 		[KSPField] public string experiment_desc = string.Empty;  // some nice lines of text
-		[KSPField] public double data_rate = 0.001;               // sampling rate in Mb/s
+		[KSPField] public double data_rate = 0.001;               // sampling rate in MB/s
 		[KSPField] public double ec_rate = 0.0;                   // EC consumption rate per-second
 		[KSPField] public double sample_amount = 0.0;         // the amount of samples this unit is shipped with
 		[KSPField] public bool sample_collecting = false;     // if set to true, the experiment will generate mass out of nothing
@@ -202,6 +202,9 @@ namespace KERBALISM
 				Lib.Log($"ExpInfo for experiment_id `{experiment_id}` is null, does the config definition exists ?", Lib.LogLevel.Error);
 				return;
 			}
+
+			Actions["StartAction"].guiName = Local.Generic_START + ": " + ExpInfo.Title;
+			Actions["StopAction"].guiName = Local.Generic_STOP + ": " + ExpInfo.Title;
 
 			if (Lib.IsFlight())
 			{
@@ -1088,6 +1091,18 @@ namespace KERBALISM
 				if (expInfo.SampleMass > 0.0 && !prefab.sample_collecting)
 					specs.Add(Local.Module_Experiment_Specifics_info6, prefab.sample_amount.ToString("F2"));//"Samples"
 				specs.Add(Local.Module_Experiment_Specifics_info7_sample, Lib.HumanReadableDuration(expSize / prefab.data_rate));//"Duration"
+			}
+
+			if (expInfo.IncludedExperiments.Count > 0)
+			{
+				specs.Add(string.Empty);
+				specs.Add(Lib.Color("Included experiments:", Lib.Kolor.Cyan, true));
+				List<string> includedExpInfos = new List<string>();
+				ExperimentInfo.GetIncludedExperimentTitles(expInfo, includedExpInfos);
+				foreach (string includedExp in includedExpInfos)
+				{
+					specs.Add("• " + includedExp);
+				}
 			}
 
 			List<string> situations = expInfo.AvailableSituations();
