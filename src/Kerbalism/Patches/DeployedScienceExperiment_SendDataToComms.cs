@@ -8,7 +8,13 @@ namespace KERBALISM
 	[HarmonyPatch(typeof(DeployedScienceExperiment))]
 	[HarmonyPatch("SendDataToComms")]
 	class DeployedScienceExperiment_SendDataToComms {
-		static bool Prefix(DeployedScienceExperiment __instance, ref bool __result) {
+		static bool Prefix(DeployedScienceExperiment __instance, ref bool __result)
+		{
+
+			// Don't mess with anything is science is disabled
+			if (!Features.Science)
+				return true;
+
 			// get private vars
 			ScienceSubject subject = Lib.ReflectionValue<ScienceSubject>(__instance, "subject");
 			float storedScienceData = Lib.ReflectionValue<float>(__instance, "storedScienceData");
@@ -42,14 +48,26 @@ namespace KERBALISM
 
 				List<Drive> drives = Drive.GetDrives(ControllerVessel, false);
 				SubjectData subjectData = ScienceDB.GetSubjectDataFromStockId(subject.id);
+				double sciencePerMB = subjectData.SciencePerMB;
+				if (sciencePerMB == 0.0)
+				{
+					Lib.Log($"SciencePerMB is 0 for {subjectData.FullTitle} !", Lib.LogLevel.Error);
+					__result = false;
+					return false;
+				}
+				float scienceValue = storedScienceData * subject.subjectValue;
+				double dataSize = scienceValue / subjectData.SciencePerMB;
 				foreach (Drive drive in drives) {
 					//Lib.Log(Lib.BuildString("BREAKING GROUND -- ", subject.id, " | ", storedScienceData.ToString()));
-					if(drive.Record_file(subjectData, storedScienceData, true)) {
+					if(drive.Record_file(subjectData, dataSize, true))
+					{
 						//Lib.Log("BREAKING GROUND -- file recorded!");
-						Lib.ReflectionValue<float>(__instance, "transmittedScienceData", transmittedScienceData + storedScienceData);
+						Lib.ReflectionValue<float>(__instance, "transmittedScienceData", transmittedScienceData + scienceValue);
 						Lib.ReflectionValue<float>(__instance, "storedScienceData", 0f);
 						break;
-					} else {
+					}
+					else
+					{
 						//Lib.Log("BREAKING GROUND -- file NOT recorded!");
 						__result = true;
 						return false;

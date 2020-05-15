@@ -1,3 +1,39 @@
+## v3.9 for all versions of KSP from 1.5.0 to 1.9.x
+
+ - 2020-05-15
+
+### Changes since the last release
+
+* Fix missing closing bracket causing reliability configs to not be applied
+
+## v3.8 for all versions of KSP from 1.5.0 to 1.9.x
+
+ - 2020-05-13
+
+### Changes since the last release
+
+* Fix #635 : NaN propagation happening (usually) on SOI changes.
+* Fixed deployed science experiments giving the full science value on the first transmission event
+* Fix #620 : Allow DeepFreeze (and TACLS) compatibility by disabling their background processing difficulty setting
+* Fix #618 : Use the new Kopernicus 1.8+ MM variable for disabling the Kopernicus solar panel module
+* Fix #628 : Ground experiments does not work with "Science = false"
+* Fix #630 : (Bureaucracy support) Pass a very small positive number as science value when a subject is completed to preserve stock contract functionality.
+* Fix #625 : TestFlight no longer is hard coded to disable reliability, this is done via configuration instead
+* Fix #610 : Fixed BIRDIE experiment requirement so it can be done
+* Fix for TU support configs (LiOn)
+* Korean localization (Vannadin)
+* Reduced radiation damage on some equipments (solar panels, transmitters and antennas)
+* Remove engine failures if EngineIgnitor or PayToPlay is installed
+
+## v3.7 for all versions of KSP from 1.5.0 to 1.9.x
+
+ - 2020-02-21
+
+### Changes since the last release
+
+* Reverted antennas idle EC consumption to pre-3.6 levels : factor changed from 0.2 to 0.04
+* Removed logging calls from other threads
+
 ## v3.6 for all versions of KSP from 1.5.0 to 1.9.x
 
  - 2020-02-18
